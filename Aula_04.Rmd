@@ -1,0 +1,120 @@
+---
+title: "Aula_04"
+author: "Leo"
+date: "2023-08-22"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Grammar of Graphics: ggplot2
+
+A base que será utilizada é a base do GapMinder que está disponível no site da UBC.
+
+```{r, message=FALSE, echo=FALSE}
+
+setwd("C:/Users/baptista.leonardo/Documents/ESPM SI/4°Semestre/R")
+
+library(tidyverse)
+
+dados = read_delim(file= "https://www.stat.ubc.ca/~jenny/notOcto/STAT545A/examples/gapminder/data/gapminderDataFiveYear.txt",
+                   delim = "\t")
+
+knitr::kable(head(dados, n=14), caption = "GapMinder 5 years")
+
+
+```
+
+Os dados desta base são dados longitudinais. O mesmo país aparecerá 12 vezes: de 1952 a 2007.
+
+Para usarmos os dados mais atuais, vamos aplicar um filtro e ficar só com os dados de 2007.
+
+
+```{r}
+
+library(knitr)
+
+dados_2007 = filter(dados, year == 2007)
+
+
+kable(head(dados_2007, caption = "Dados de 2007"))
+
+```
+
+### Gráficos simples
+
+Qualquer gráfico deste pacote necessita de três elementos:
+
+1) Dados,
+
+2) Algum mapeamento estético (aesthetic mappings,
+abreviado como “aes”) entre as variáveis e propriedades
+visuais dos gráficos.
+
+3) Pelo menos uma camada que descreva como as
+observações serão apresentadas. Essas camadas são
+construídas com base em funções chamadas de geometrias,
+abreviadas por “geom”.
+
+```{r}
+
+ggplot(dados_2007, aes(x=continent, fill=continent)) + geom_bar() + labs(title = "Países por continente", x = "", y = "Contagem", fill="Continentes") + scale_fill_brewer(palette = "Oranges") + theme_classic() + guides(fill="none")
+
+```
+
+Cada camada inserida deve vir após o sinal de +. A última camada não pode ser seguida de um sinal de +.
+
+```{r}
+
+ggplot(dados_2007, aes(y = lifeExp, x = continent, fill=continent)) + geom_boxplot() + labs(title = "Expectativa de vida por continente", subtitle = "Dados de 2007", x = "", y = "Expectativa de vida", fill="Continentes") + scale_fill_brewer(palette = "Blues") + theme_classic() + guides(fill="none")
+
+```
+
+
+O diagrama de dispersão pode ser muito bem aproveitado pelo GGPLOT
+
+
+```{r}
+
+ggplot(dados_2007, aes(x = gdpPercap, y = lifeExp, color = continent)) + geom_point(size = 3, alpha=0.7) + labs(title = "Expectativa de vida por PIB per capita", subtitle = "Dados de 2007", x = "PIB per capita", y = "Expectativa de vida - anos", color="Continentes") + theme_classic()
+
+```
+
+
+Outras visualizações:
+
+```{r}
+ggplot(dados_2007, aes(x=gdpPercap, y = lifeExp)) + geom_density2d()  + labs(title = "Expectativa de vida por PIB per capita", subtitle = "Dados de 2007", x = "PIB per capita", y = "Expectativa de vida - anos") + theme_classic()
+```
+
+
+```{r}
+
+dados_br = filter(dados, country == c("Brazil", "United States"))
+
+ggplot(dados_br, aes(x=year, y = lifeExp, color=country)) + geom_line(size=4) + labs(title = "Expectativa de vida - Brazil vs USA", subtitle = "GapMinder", x = "", y = "Expectativa de vida - anos", color = "Países") + theme_classic()
+
+
+```
+
+Colocando tudo junto
+
+```{r, message=FALSE, echo=FALSE}
+
+library(gridExtra)
+
+g1 = ggplot(dados_br, aes(x=year, y = lifeExp, color=country)) + geom_line(size=4) + labs(title = "Expectativa de vida - Brazil vs USA", subtitle = "GapMinder", x = "", y = "Expectativa de vida - anos", color = "Países") + theme_classic()
+
+g2 = ggplot(dados_2007, aes(x=gdpPercap, y = lifeExp)) + geom_density2d()  + labs(title = "Expectativa de vida por PIB per capita", subtitle = "Dados de 2007", x = "PIB per capita", y = "Expectativa de vida - anos") + theme_classic()
+
+g3 = ggplot(dados_2007, aes(y = lifeExp, x = continent, fill=continent)) + geom_boxplot() + labs(title = "Expectativa de vida por continente", subtitle = "Dados de 2007", x = "", y = "Expectativa de vida", fill="Continentes") + scale_fill_brewer(palette = "Blues") + theme_classic() + guides(fill="none")
+
+g4 = ggplot(dados_2007, aes(x=continent, fill=continent)) + geom_bar() + labs(title = "Países por continente", x = "", y = "Contagem", fill="Continentes") + scale_fill_brewer(palette = "Oranges") + theme_classic() + guides(fill="none")
+
+grid.arrange(g1,g2,g3,g4,ncol=2)
+
+
+```
+
