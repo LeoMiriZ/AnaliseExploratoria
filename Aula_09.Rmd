@@ -1,0 +1,71 @@
+---
+title: "Lista_2"
+author: "Leo"
+date: "2023-09-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1) Um diretor de uma instituição financeira que presta serviços para agências bancárias em Barueri deseja agrupar os municípios abaixo de acordo com a quantidade de agências e o valor do caixa dentro de cada município.
+
+
+```{r, warning=FALSE, echo=FALSE}
+
+setwd("C:/Users/baptista.leonardo/Documents/ESPM SI/4°Semestre/R")
+
+dados = readxl::read_xlsx("Lista de exercícios 2 - segmentação.xlsx", sheet = "Ex1")
+
+```
+
+a) Considerando as variáveis acima, obtenha a matriz de distância (calcular a distância Euclidiana). Apresente-a.
+
+```{r, warning=FALSE, echo=FALSE}
+
+dados1 = dados[-c(4,5)]
+
+dados1 = data.frame(dados1, row.names = 1)
+
+dados2 = scale(dados1)
+
+options(digits = 2)
+
+#knitr::kable(dados2)
+
+dist(dados2)
+
+```
+
+- O município com a menor distância euclidiana em relação à Barueri é SBC.
+
+
+b) Qual o local mais parecido com Barueri para se abrir uma filial da instituição financeira? Use o código abaixo para apresentar a solução:
+
+instalar a library "leaflet"
+library(leaflet)
+mapa <- leaflet() %>%
+addTiles() %>%
+addMarkers(
+lng= longitude, # inserir os dados com as longitudes
+lat= latitude, # inserir os dados com as latitudes
+popup=c(" "," "," "," ")) # escrever um comentário
+mapa
+
+```{r, echo=FALSE}
+
+# instalar a library "leaflet"
+
+library(leaflet)
+mapa <- leaflet() %>%
+addTiles() %>%
+addMarkers(
+lng= dados$Longitude, # inserir os dados com as longitudes
+lat= dados$Latitude, # inserir os dados com as latitudes
+popup=c("Matriz","Descartar","Possível Filial","Descartar")) # escrever um comentário
+mapa
+
+
+```
+
